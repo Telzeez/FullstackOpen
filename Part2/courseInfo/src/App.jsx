@@ -15,14 +15,22 @@ const course = {
       {
         name: 'State of a component',
         exercises: 14
+      },
+        {
+        name: 'Redux',
+        exercises: 11
       }
     ]
   }
+  const courseParts = course.parts
+  console.log(courseParts)
+  
 
 
   return (
     <div>
     <Course course={course}/>
+    <p><strong>total of {courseParts.reduce((a,b) => a + b.exercises, 0)} exercises</strong> </p>
  
     </div>
   )

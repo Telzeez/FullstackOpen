@@ -7,7 +7,7 @@ return (
 
         {
             courseParts.map(coursePart => (
-                <p>{coursePart.name} {coursePart.exercices}</p>
+                <p key={coursePart.name}>{coursePart.name} {coursePart.exercises} </p>
             )
 
             )
