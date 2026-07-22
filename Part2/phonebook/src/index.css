@@ -1,0 +1,42 @@
+.notification {
+  position: absolute;
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 2px solid #555;      /* Default neutral border */
+  background-color: #f0f0f0;  /* Default neutral background */
+  color: #333;                /* Default text color */
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-weight: bold;
+  z-index: 1000;  
+  max-height: fit-content;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;            /* Ensures it floats on top of everything */
+}
+  .container {
+    
+display: block;
+  padding: 2px;
+  margin: 20px auto;
+  max-width: 600px;
+  min-width: 100px;
+  border: 0.5px solid #5e5d5d;
+  box-shadow: #5e5d5d 1px 1px 3px;
+  position: relative;
+  overflow: hidden;
+}
+.notification.error {
+  border-color: red;
+  background-color: rgb(251, 102, 102);
+  color: white;
+}
+.notification.success {
+  border-color: green;
+  background-color: rgb(145, 235, 145);
+  color: green;
+}
+h2{
+    margin-top: 50px;
+}
