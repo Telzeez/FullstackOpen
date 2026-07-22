@@ -1,5 +1,16 @@
-GET http://localhost:3000/api/persons/
+### Variables
+@baseUrl = https://fullstack-open-five.vercel.app
+
+### 1. Get all live persons
+GET {{baseUrl}}/api/persons
 
 ###
 
-DELETE   http://localhost:3000/api/persons/1
+### 2. Add a new person to the live server
+POST {{baseUrl}}/api/persons
+Content-Type: application/json
+
+{
+    "name": "Ada Lovelace",
+    "number": "39-44-5323523"
+}

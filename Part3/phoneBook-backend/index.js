@@ -88,3 +88,5 @@ res.status(200).json(updatedPerson)
 app.listen(port, () => { 
     console.log(`Server is up listening on port ${port}`) 
 })
+
+export default app;
