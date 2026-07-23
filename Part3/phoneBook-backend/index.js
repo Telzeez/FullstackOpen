@@ -69,7 +69,18 @@ app.use(morgan(':method :url :status :res[content-length] :response-time ms :bod
 app.get("/", (req, res) => { 
     res.send("Ohh sorry nothing is here did you forget to add api/persons?") 
 }) 
+app.get('/info', (req, res) => {
+    try {
+        const count = await Phone.countDocuments()
+    const dateRequested = new Date()
+    res.send(`Phone book has info for ${count} people <br>  ${dateRequested}`)
+    } catch (error) {
+       res.status(500).send('Error retrieving info') 
+    }
+    
+})
 
+// get all 
 app.get("/api/persons", (req, res) => { 
     Phone.find({}).then(result => {
         res.json(result)
@@ -79,65 +90,90 @@ app.get("/api/persons", (req, res) => {
     res.status(500).json({ error: 'failed to retrieve database documents' });
 })})
 
-app.get('/info', (req, res) => {
-    const dateRequested = new Date()
-    res.send(`Phone book has info for ${data.length} people <br>  ${dateRequested}`)
-})
-app.get("/api/persons/:id", (req, res) => {
+// get one by id
+app.get("/api/persons/:id", async (req, res) => {
     const id = req.params.id;
-    const findRequestedPerson = data.find(person => person.id === id)
-    if(!findRequestedPerson){
-        res.status(404).send("No such person")
-    }else{
-        res.status(200).send(findRequestedPerson)
+    try {
+        const findRequestedPerson = await Phone.findById(id);
+         if(!findRequestedPerson){
+        return res.status(404).send("No such person")
+    }
+     res.status(200).json(findRequestedPerson)
+    } catch (error) {
+         if (error.name === 'CastError') {
+            return res.status(400).json({ error: 'Invalid ID format' });}
 
     }})
-
-
-app.delete('/api/persons/:id', (req, res) => {
-    let id  = req.params.id
-    data = data.filter(d => d.id !== id)
-    res.status(204).end()
-})
-
-app.post('/api/persons', (req, res) => {
-    const newId = Math.random().toString(36).substring(2, 9)
-    const person = req.body
-    const thisUserExist = data.find(p => p.name === person.name)
-   Person.findOne({name: person.name}).then(existingPerson => {
-    if(existingPerson) {
-        return res.status(409).send(`The user with the nme ${person.name} exist`)
-    }
-   })
-    const newPerson = new Phone({
-        id: newId,
-        name: person.name,
-        number: person.number
     
+    // delete
+    app.delete('/api/persons/:id', async (req, res) => {
+     const id  = req.params.id
+        try {
+            const personToDelete = await Phone.findByIdAndDelete(id);
+            if(!personToDelete){
+                return res.status(404).send("person not found")
+            }
+            res.status(204).end()
+            
+        } catch (error) {
+             console.error('Error deleting person:', error);
+        if (error.name === 'CastError') {
+            return res.status(400).json({ error: 'Invalid ID format' });
+        }
+          res.status(500).json({ error: 'Failed to delete person' });
+        }
     })
-    newPerson.save().then(savedPhone => {
-        console.log(savedPhone)
-        res.json(savedPhone)
-
-    })
+    // Post create
+    app.post('/api/persons', async (req, res) => {
+        const newId = Math.random().toString(36).substring(2, 9)
+        const {name, number}= req.body
+        if(!name || !number){
+            return res.status(400).json({error: "Name and numbers are required"})
+        }
+        try {
+             const existingPerson = await Phone.findOne({name: person.name})
+            if(existingPerson) {
+                return res.status(409).send(`The user with the name ${person.name} exist`)
+            }  
+              const newPerson =await new Phone({name, number})
+   const saved =  await newPerson.save()
+   res.status(201).json(saved)
+        } catch (error) {
+              console.error('Error creating person:', error);
+        res.status(500).json({ error: 'Failed to create person' });
+        }
+        
+       
+      
+   })
  
-    res.status(201).json(newPerson)
-})
-
-
-app.put('/api/persons/:id', (req, res) => {
+// update
+app.put('/api/persons/:id', async (req, res) => {
     const id = req.params.id
     const body = req.body
-    const personId = data.findIndex(p => p.id === id)
-    if(personId === -1){
-        return res.status(404).send(`The user with the name cant be found`)
+    const name  = req.body.name
+    number = req.body.number
+    try {
+        const updatedPerson = await Phone.findByIdAndUpdate(
+        id,
+        {name, number},
+        {new: true, runValidators: true}
+    )
+    if(!updatedPerson){
+        return res.status(404).json({error: "person not found"})
     }
-    const updatedPerson = {
-        ...data[personId], number: body.number
-    }
-data = data.map(p=> p.id === id ? updatedPerson : p)
+
 res.status(200).json(updatedPerson)
+    } catch (error) {
+        console.error('Error updating person:', error);   // logs the entire error
+     if (error.name === 'CastError') {
+            return res.status(400).json({ error: 'Invalid ID format' });
+        }
+    res.status(500).json({ error: 'failed to update data' });
+    }
+    
 })
+
 const port = process.env.PORT || 3001
 if(process.env.NODE_ENV !== 'production'){
 app.listen(port, () => { 
