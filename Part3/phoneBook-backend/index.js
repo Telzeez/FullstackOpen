@@ -74,9 +74,11 @@ app.get("/api/persons", (req, res) => {
     Phone.find({}).then(result => {
         res.json(result)
     }).catch(error => {
-        res.status(500).json({error: 'failed to retrieve database documents'})
-    })
-}) 
+    console.error('Full error object:', error);   // logs the entire error
+    console.error('Error message:', error.message);
+    res.status(500).json({ error: 'failed to retrieve database documents' });
+})})
+
 app.get('/info', (req, res) => {
     const dateRequested = new Date()
     res.send(`Phone book has info for ${data.length} people <br>  ${dateRequested}`)

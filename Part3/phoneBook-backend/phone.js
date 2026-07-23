@@ -16,10 +16,10 @@ const phoneSchema = new mongoose.Schema({
     number: String
 })
 phoneSchema.set('toJSON', {
-    transform: (document, retrunedObj) => {
-         delete returnedObject._id
-         delete returnedObject.__v
+    transform: (document, returnedObject) => {
+        delete returnedObject._id;
+        delete returnedObject.__v;
+       
     }
-})  
-
+})
 export default mongoose.model('Phone', phoneSchema)
