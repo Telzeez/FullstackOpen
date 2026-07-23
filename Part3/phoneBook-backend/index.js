@@ -5,6 +5,7 @@ import dns from 'node:dns'
 import morgan from 'morgan'
 import { stringify } from 'node:querystring'
 import Phone from './phone.js'
+import cors from 'cors'
 dns.setServers(['1.1.1.1', '8.8.8.8'])
 
 
@@ -13,6 +14,7 @@ dns.setServers(['1.1.1.1', '8.8.8.8'])
 
 
 const app = express() 
+app.use(cors())
 app.use(json()) 
 
 app.use(morgan('dev'))
