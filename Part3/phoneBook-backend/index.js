@@ -5,7 +5,7 @@ import mongoose, { mongo } from 'mongoose'
 import morgan from 'morgan'
 import { stringify } from 'node:querystring'
 import Phone from './phone.js'
-import phone from './phone.js'
+
 import { Person } from '../../Part2/phonebook/src/components/person.jsx'
 
 
