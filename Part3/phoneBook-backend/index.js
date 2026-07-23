@@ -1,10 +1,11 @@
 import express, { json } from 'express' 
 import { data as initialData } from './data.js' 
 import mongoose, { mongo } from 'mongoose'
-
+import dns from 'node:dns'
 import morgan from 'morgan'
 import { stringify } from 'node:querystring'
 import Phone from './phone.js'
+dns.setServers(['1.1.1.1', '8.8.8.8'])
 
 
 
