@@ -19,7 +19,7 @@ app.use(json())
 app.use(morgan('dev'))
 app.use(express.static('dist'))
 let data = initialData
-const port = process.env.PORT || 3001 
+
 
 // if (process.argv.length < 2) {
 //     console.log("run the command with your password and contact to add");
