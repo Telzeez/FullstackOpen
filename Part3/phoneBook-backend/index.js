@@ -1,5 +1,5 @@
 import express, { json } from 'express' 
-import { data as initialData } from './data.js' 
+ 
 import mongoose, { mongo } from 'mongoose'
 import dns from 'node:dns'
 import morgan from 'morgan'
@@ -17,7 +17,7 @@ app.use(json())
 
 app.use(morgan('dev'))
 app.use(express.static('dist'))
-let data = initialData
+
 
 
 // if (process.argv.length < 2) {
@@ -69,7 +69,7 @@ app.use(morgan(':method :url :status :res[content-length] :response-time ms :bod
 app.get("/", (req, res) => { 
     res.send("Ohh sorry nothing is here did you forget to add api/persons?") 
 }) 
-app.get('/info', (req, res) => {
+app.get('/info', async (req, res) => {
     try {
         const count = await Phone.countDocuments()
     const dateRequested = new Date()
@@ -96,13 +96,14 @@ app.get("/api/persons/:id", async (req, res) => {
     try {
         const findRequestedPerson = await Phone.findById(id);
          if(!findRequestedPerson){
-        return res.status(404).send("No such person")
+       return res.status(404).json({ error: 'Person not found' })
     }
      res.status(200).json(findRequestedPerson)
     } catch (error) {
          if (error.name === 'CastError') {
             return res.status(400).json({ error: 'Invalid ID format' });}
-
+console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve person' });
     }})
     
     // delete
@@ -125,17 +126,17 @@ app.get("/api/persons/:id", async (req, res) => {
     })
     // Post create
     app.post('/api/persons', async (req, res) => {
-        const newId = Math.random().toString(36).substring(2, 9)
+      
         const {name, number}= req.body
         if(!name || !number){
             return res.status(400).json({error: "Name and numbers are required"})
         }
         try {
-             const existingPerson = await Phone.findOne({name: person.name})
+             const existingPerson = await Phone.findOne({name})
             if(existingPerson) {
-                return res.status(409).send(`The user with the name ${person.name} exist`)
+                return res.status(409).send(`The user with the name ${name} exist`)
             }  
-              const newPerson =await new Phone({name, number})
+              const newPerson =new Phone({name, number})
    const saved =  await newPerson.save()
    res.status(201).json(saved)
         } catch (error) {
@@ -150,9 +151,9 @@ app.get("/api/persons/:id", async (req, res) => {
 // update
 app.put('/api/persons/:id', async (req, res) => {
     const id = req.params.id
-    const body = req.body
+
     const name  = req.body.name
-    number = req.body.number
+    const number = req.body.number
     try {
         const updatedPerson = await Phone.findByIdAndUpdate(
         id,
