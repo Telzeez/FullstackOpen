@@ -74,7 +74,7 @@ app.get("/api/persons", (req, res) => {
     Phone.find({}).then(result => {
         res.json(result)
     }).catch(error => {
-        res.status.json({error: 'failed to retrieve database documents'})
+        res.status(500).json({error: 'failed to retrieve database documents'})
     })
 }) 
 app.get('/info', (req, res) => {
