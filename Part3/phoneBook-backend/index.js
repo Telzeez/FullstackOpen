@@ -6,6 +6,7 @@ import morgan from 'morgan'
 import { stringify } from 'node:querystring'
 import Phone from './phone.js'
 import phone from './phone.js'
+import { Person } from '../../Part2/phonebook/src/components/person.jsx'
 
 
 
@@ -67,12 +68,14 @@ morgan.token('body', (req, res)=> {
 })
 app.use(morgan(':method :url :status :res[content-length] :response-time ms :body'))
 app.get("/", (req, res) => { 
-    res.send("Ohh sorry nothing is here did you forget to add api/notes?") 
+    res.send("Ohh sorry nothing is here did you forget to add api/persons?") 
 }) 
 
 app.get("/api/persons", (req, res) => { 
     Phone.find({}).then(result => {
         res.json(result)
+    }).catch(error => {
+        res.status.json({error: 'failed to retrieve database documents'})
     })
 }) 
 app.get('/info', (req, res) => {
@@ -100,19 +103,18 @@ app.post('/api/persons', (req, res) => {
     const newId = Math.random().toString(36).substring(2, 9)
     const person = req.body
     const thisUserExist = data.find(p => p.name === person.name)
-    if(!person.name ){
-       return res.status(400).send("Name is required")
+   Person.findOne({name: person.name}).then(existingPerson => {
+    if(existingPerson) {
+        return res.status(409).send(`The user with the nme ${person.name} exist`)
     }
-    if(thisUserExist){
-        return res.status(409).send(`The user with the name ${thisUserExist.name} exist`)
-    }
+   })
     const newPerson = new Phone({
         id: newId,
         name: person.name,
         number: person.number
     
     })
-    phone.save().then(savedPhone => {
+    newPerson.save().then(savedPhone => {
         console.log(savedPhone)
         res.json(savedPhone)
 
@@ -135,8 +137,12 @@ app.put('/api/persons/:id', (req, res) => {
 data = data.map(p=> p.id === id ? updatedPerson : p)
 res.status(200).json(updatedPerson)
 })
+const port = process.env.PORT || 3001
+if(process.env.NODE_ENV !== 'production'){
 app.listen(port, () => { 
     console.log(`Server is up listening on port ${port}`) 
 })
+}
+
 
 export default app;
