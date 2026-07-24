@@ -1,5 +1,5 @@
 ### Variables
-@baseUrl = https://fullstack-open-five.vercel.app
+@baseUrl = http://localhost:3001
 
 ### 1. Get all live persons
 GET {{baseUrl}}/api/persons
@@ -11,6 +11,6 @@ POST {{baseUrl}}/api/persons
 Content-Type: application/json
 
 {
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
+    "name": "Adfrreu",
+    "number": "39-445323523"
 }
